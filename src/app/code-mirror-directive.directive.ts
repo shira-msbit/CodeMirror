@@ -1,3 +1,13 @@
+/**
+ * This is a POC for the CodeMirror Directive
+ * We extend the behaviour of the textArea (same as the CodeMirror.js documentation recommendation)
+ *
+ * Usage example:
+ *  <textarea appCodeMirrorDirective [content]="content" [config]="config" (userUpdated)="consoleLog($event)"></textarea>
+ *
+ *
+ */
+
 import {
   EventEmitter, Output, AfterViewInit, Directive, ElementRef, HostListener, Input,
   OnChanges, OnDestroy
@@ -10,8 +20,8 @@ import * as CodeMirror from 'codemirror/lib/codemirror.js';
 
 export class CodeMirrorDirectiveDirective implements AfterViewInit, OnChanges, OnDestroy {
   private instance;
-  @Input() config: any;
-  @Input() content: string;
+  @Input() config = {};
+  @Input() content = '';
   @Output() userUpdated: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private elRef: ElementRef) {
@@ -25,11 +35,8 @@ export class CodeMirrorDirectiveDirective implements AfterViewInit, OnChanges, O
 
   ngAfterViewInit() {
     // init Code mirror instance
-    const config = {
-      lineNumbers: true
-    };
     // check if element type is testarea
-    this.instance = CodeMirror.fromTextArea(this.elRef.nativeElement, config);
+    this.instance = CodeMirror.fromTextArea(this.elRef.nativeElement, this.config);
     // Outpus declerations
     this.instance.setValue(this.content);
     this.instance.on('change', this.change);
@@ -37,7 +44,6 @@ export class CodeMirrorDirectiveDirective implements AfterViewInit, OnChanges, O
   }
 
   ngOnDestroy() {
-    console.log('ngOnDestroy');
     // un bind the methods
     this.instance.off('change', this.change);
     this.instance = null;
